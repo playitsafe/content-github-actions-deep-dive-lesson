@@ -73,5 +73,5 @@ jobs:
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }} # endpoint of the release, is a output of create-release step
           asset_path: ./${{ github.sha }}.zip # where in the runner the asset is now
-          assset_name: my_src_code_with_libs.zip # on the release page
+          asset_name: my_src_code_with_libs.zip # on the release page
           asset_content_type: application/zip
