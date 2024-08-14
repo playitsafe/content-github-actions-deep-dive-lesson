@@ -47,8 +47,10 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
+    needs: build # run download after build
     steps:
       - name: create release
+        id: create-release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }} # GH handles that
@@ -58,4 +60,18 @@ jobs:
           body: New release for ${{ github.sha }}. Release note on the doc site
           draft: false
           prerelease: false
-    
+
+      # pull down the artifact created in build step
+      - name: download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: zipped-bundle
+      - name: upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }} # endpoint of the release, is a output of create-release step
+          asset_path: ./${{ github.sha }}.zip # where in the runner the asset is now
+          assset_name: my_src_code_with_libs.zip # on the release page
+          asset_content_type: application/zip
